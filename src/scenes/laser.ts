@@ -207,13 +207,15 @@ function create(ctx: SceneCtx): SceneInstance {
     g.fillStyle = col(d.c);
     if (flat) { g.fillRect(X - 4, Y - 1, 9, 3); g.fillRect(X - 3, Y - 2, 7, 5); }
     else { g.fillRect(X - 3, Y - 3, 7, 7); g.fillRect(X - 4, Y - 2, 9, 5); g.fillRect(X - 2, Y - 4, 5, 9); }
-    g.globalAlpha = 1;
-    if (flat) { g.fillRect(X - 2, Y - 1, 5, 3); g.fillRect(X - 1, Y - 2, 3, 5); }
-    else { g.fillRect(X - 2, Y - 2, 5, 5); }
-    g.fillStyle = col('#ffffff');
-    if (flat) g.fillRect(X - 1, Y, 3, 1); else g.fillRect(X - 1, Y - 1, 3, 3);
+    // The body is painted solid, so it stays red even on a pale floor in daylight.
     g.globalCompositeOperation = 'source-over';
     g.globalAlpha = 1;
+    if (flat) { g.fillRect(X - 2, Y - 1, 5, 3); g.fillRect(X - 1, Y - 2, 3, 5); }
+    else { g.fillRect(X - 2, Y - 2, 5, 5); g.fillRect(X - 3, Y - 1, 7, 3); g.fillRect(X - 1, Y - 3, 3, 7); }
+    g.fillStyle = col(d.c === '#ff2a3a' ? '#ff8a8a' : '#d8ffd8');
+    if (flat) g.fillRect(X - 1, Y - 1, 3, 2); else g.fillRect(X - 1, Y - 1, 3, 3);
+    g.fillStyle = col('#ffffff');
+    if (flat) g.fillRect(X, Y - 1, 1, 1); else g.fillRect(X, Y - 1, 1, 2);
   }
 
   function draw(g: CanvasRenderingContext2D, t: number) {
