@@ -39,8 +39,10 @@ export class Hud {
     this.ringArc = this.el.querySelector('.hud-ring .arc')!;
     this.menuBtn = this.el.querySelector('.hud-menu')!;
     this.hint = this.el.querySelector('.hud-hint')!;
-    this.menuBtn.addEventListener('click', (e) => { e.stopPropagation(); onMenu(); });
-    this.menuBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
+    // Only a real mouse opens the menu from here: a paw landing on the button does nothing.
+    let byMouse = false;
+    this.menuBtn.addEventListener('pointerdown', (e) => { byMouse = e.pointerType === 'mouse'; if (byMouse) e.stopPropagation(); });
+    this.menuBtn.addEventListener('click', (e) => { e.stopPropagation(); if (byMouse) onMenu(); byMouse = false; });
   }
 
   show(on: boolean) {

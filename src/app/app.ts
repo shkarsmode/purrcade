@@ -274,11 +274,14 @@ export class App {
         const [x, y] = this.screen.toWorld(e.clientX, e.clientY);
         this.stage.paw(x, y);
       }
-      if (this.inCorner(e.clientX, e.clientY) && (this.mode === 'play' || this.mode === 'rest')) {
+    });
+    // The corner hold is watched on the whole window, whatever is under the finger there.
+    addEventListener('pointerdown', (e) => {
+      if (this.inCorner(e.clientX, e.clientY) && ((this.mode === 'play' && !this.menuOpen) || this.mode === 'rest')) {
         this.holdId = e.pointerId;
         this.holdT = 0;
       }
-    });
+    }, { capture: true });
     const end = (e: PointerEvent) => { if (e.pointerId === this.holdId) { this.holdId = null; this.hud.hold(0); } };
     addEventListener('pointerup', end);
     addEventListener('pointercancel', end);
