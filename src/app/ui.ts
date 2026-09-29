@@ -32,6 +32,21 @@ function h<K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: s
   return e;
 }
 
+/** A pixel loudspeaker, with sound waves when on and a cross when off. */
+function speaker(on: boolean): HTMLImageElement {
+  const c = document.createElement('canvas');
+  c.width = 13; c.height = 11;
+  const g = c.getContext('2d')!;
+  g.fillStyle = '#f6f0e6';
+  g.fillRect(1, 4, 3, 3); g.fillRect(4, 3, 1, 5); g.fillRect(5, 2, 1, 7); g.fillRect(6, 1, 1, 9);
+  if (on) { g.fillRect(8, 4, 1, 3); g.fillRect(10, 2, 1, 7); g.fillRect(9, 3, 1, 1); g.fillRect(9, 7, 1, 1); g.fillRect(11, 3, 1, 5); }
+  else { g.fillStyle = '#ff8fa3'; for (let i = 0; i < 4; i++) { g.fillRect(8 + i, 3 + i, 1, 1); g.fillRect(11 - i, 3 + i, 1, 1); } }
+  const img = new Image();
+  img.src = c.toDataURL();
+  img.className = 'px-icon';
+  return img;
+}
+
 function button(label: string, cls: string, on: () => void): HTMLButtonElement {
   const b = h('button', 'btn ' + cls, label);
   b.type = 'button';
@@ -89,6 +104,7 @@ export class UI {
     const box = h('div', 'home');
     const lang = button(this.s.lang === 'uk' ? 'EN' : 'УКР', 'ghost lang-switch', () => { this.s.lang = this.s.lang === 'uk' ? 'en' : 'uk'; if (this.s.lang === 'en' && this.s.catName === 'Джені') this.s.catName = 'Jenny'; else if (this.s.lang === 'uk' && this.s.catName === 'Jenny') this.s.catName = 'Джені'; this.hooks.changed('lang'); });
     this.layer.appendChild(lang);
+    this.layer.appendChild(this.soundButton('ghost sound-switch'));
     const logo = logoCanvas();
     logo.className = 'logo';
     box.appendChild(logo);
@@ -111,6 +127,7 @@ export class UI {
     box.appendChild(h('h2', '', 'Purrcade'));
     box.appendChild(button('▶  ' + t('resume'), 'primary big', () => this.hooks.resume()));
     box.appendChild(button('⏭  ' + t('nextScene'), '', () => this.hooks.next()));
+    box.appendChild(this.soundButton(''));
     const row = h('div', 'row');
     row.appendChild(button(t('scenes'), '', () => this.show('gallery', 'menu')));
     row.appendChild(button(t('settings'), '', () => this.show('settings', 'menu')));
@@ -118,6 +135,23 @@ export class UI {
     box.appendChild(row);
     box.appendChild(button(t('home'), 'ghost', () => this.hooks.home()));
     return box;
+  }
+
+  /** Sound on or off in one tap — with a chime as it comes on, so it is heard to work. */
+  private soundButton(cls: string): HTMLButtonElement {
+    const b = button('', cls + ' sound-btn', () => {
+      this.s.sound = !this.s.sound;
+      this.hooks.changed('sound');
+      fill();
+    });
+    const fill = () => {
+      b.innerHTML = '';
+      b.appendChild(speaker(this.s.sound));
+      b.appendChild(document.createTextNode(' ' + (this.s.sound ? t('soundOn') : t('soundOff'))));
+      b.classList.toggle('muted', !this.s.sound);
+    };
+    fill();
+    return b;
   }
 
   private rest(): HTMLElement {

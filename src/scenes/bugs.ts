@@ -91,6 +91,7 @@ function create(ctx: SceneCtx): SceneInstance {
     h.y1 = inBandY(h.y + rng.range(-16, 16));
     h.dur = rng.range(0.45, 0.7);
     h.jump = 0.0001;
+    ctx.sfx.chirr();
   }
 
   function update(dt: number) {

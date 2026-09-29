@@ -173,6 +173,7 @@ function create(ctx: SceneCtx): SceneInstance {
     m.p = 0;
     m.x = h.x + m.hs * T; m.y = h.y;
     m.st = 'peek'; m.t = rng.range(0.8, 2.6) * (1.3 - m.bold * 0.6);
+    if (rng.chance(0.3)) sfx.squeak();
     m.out = 0; m.crumb = false;
     if (m.coat !== 'gold' && rng.chance(0.03)) m.coat = 'gold';
   }
@@ -237,7 +238,7 @@ function create(ctx: SceneCtx): SceneInstance {
         m.t -= dt;
         if (m.t <= 0) {
           if (rng.chance(0.12 * (1 - m.bold))) { m.st = 'in'; m.face = (-m.face) as 1 | -1; }
-          else m.st = 'exit';
+          else { m.st = 'exit'; if (rng.chance(0.6)) sfx.patter(); }
         }
         break;
       }
@@ -267,6 +268,7 @@ function create(ctx: SceneCtx): SceneInstance {
             hold(m, 'sniff', 0.9); m.face = f.x > m.x ? 1 : -1;
             if (f.st === 'wait' || f.st === 'go') { hold(f, 'sniff', 0.9); f.face = (-m.face) as 1 | -1; }
             fx.add({ x: (m.x + f.x) / 2, y: m.y - 16, kind: 'heart', c: '#ff8fa3', vy: -12, max: 1 });
+            sfx.squeak();
             break;
           }
         }
@@ -281,7 +283,7 @@ function create(ctx: SceneCtx): SceneInstance {
         if (m.hold === 'look' && m.holdT > 0.35) { m.holdT = -rng.range(0.2, 0.6); m.face = (-m.face) as 1 | -1; }
         if (m.t <= 0) {
           if (m.after === 'flee') { flee(m); break; }
-          if (m.path.length) { m.st = 'go'; m.leg = rng.range(28, 90) * (0.7 + m.bold * 0.6); }
+          if (m.path.length) { m.st = 'go'; m.leg = rng.range(28, 90) * (0.7 + m.bold * 0.6); if (rng.chance(0.45)) sfx.patter(); }
           else decide(m);
         }
         break;

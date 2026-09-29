@@ -54,7 +54,7 @@ function create(ctx: SceneCtx): SceneInstance {
       case 'run': {
         bot.v += (sp - bot.v) * dt * 3;
         const nx = bot.x + Math.cos(bot.a) * bot.v * dt, ny = bot.y + Math.sin(bot.a) * bot.v * dt * 0.5;
-        if (!inFloor(nx, ny, RX) || blocked(nx, ny)) { bot.mode = 'turn'; bot.turnTo = bot.a + Math.PI * rng.range(0.5, 1.2) * rng.sign(); bot.v = 0; sfx.bounce(); fx.burst(nx + Math.cos(bot.a) * RX, ny, 3, ['#ffffff'], { speed: 20, g: 0, max: 0.3 }); break; }
+        if (!inFloor(nx, ny, RX) || blocked(nx, ny)) { bot.mode = 'turn'; bot.turnTo = bot.a + Math.PI * rng.range(0.5, 1.2) * rng.sign(); bot.v = 0; sfx.bounce(); if (rng.chance(0.35)) sfx.beep(); fx.burst(nx + Math.cos(bot.a) * RX, ny, 3, ['#ffffff'], { speed: 20, g: 0, max: 0.3 }); break; }
         bot.x = nx; bot.y = ny;
         if (bot.t <= 0) { const r = rng.next(); if (r < 0.2) { bot.mode = 'spiral'; bot.t = rng.range(4, 7); } else if (r < 0.45) { bot.mode = 'think'; bot.t = rng.range(1, 2.5); } else { bot.mode = 'turn'; bot.turnTo = bot.a + rng.range(-1.5, 1.5); } }
         break;
@@ -139,6 +139,7 @@ function create(ctx: SceneCtx): SceneInstance {
   function paw(x: number, y: number) {
     if (dist(x, y, bot.x, bot.y - 3) < (RX + 4) * opts.reach) {
       bot.mode = 'spin'; bot.t = 0.9; bot.blink = 0;
+      sfx.beep();
       ctx.caught('robot', bot.x, bot.y - 6, '#9fe8ff');
       if (rider.st === 'ride') { rider.st = 'fright'; rider.t = 3; rider.vh = 110; rider.x = bot.x + rng.sign() * (RX + 4); rider.y = bot.y + 3; sfx.squeak(); fx.text(rider.x, rider.y - 22, '!', '#ffe066'); }
     }

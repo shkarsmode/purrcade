@@ -203,10 +203,18 @@ export class App {
     if (this.amb > 0) return;
     const { loc, tod, scene } = this.seg;
     const outdoor = !(locationById(loc)?.indoor ?? true);
-    const wet = loc === 'koi' || loc === 'pond' || loc === 'aquarium';
+    const wet = loc === 'koi' || loc === 'pond';
     this.amb = 2 + Math.random() * 5;
+    if (loc === 'arcade') return;
+    if (loc === 'aquarium') { this.sfx.bubble(); this.amb = 0.3 + Math.random() * 1.2; return; }
     if (loc === 'beach') { this.sfx.wave(); this.amb = 6 + Math.random() * 2; return; }
     if (wet && Math.random() < 0.5) { this.sfx.drip(); return; }
+    if (!outdoor) {
+      // Indoors: the garden faintly through the window by day, a cricket now and then at night.
+      if (tod !== 'night') { if (Math.random() < 0.5) this.sfx.song(true); } else if (Math.random() < 0.35) this.sfx.cricket(true);
+      this.amb = 4 + Math.random() * 7;
+      return;
+    }
     if (outdoor && tod === 'night') { this.sfx.cricket(); this.amb = 0.8 + Math.random() * 2; if (loc === 'forest' && Math.random() < 0.08) this.sfx.owl(); return; }
     if (outdoor && tod !== 'night' && loc !== 'arcade') { if (Math.random() < (scene === 'birds' ? 0.8 : 0.45)) this.sfx.song(); return; }
   }
@@ -215,6 +223,8 @@ export class App {
 
   private changed(k: keyof Settings) {
     saveSettings(this.settings);
+    if (k === 'sound' && this.settings.sound) { this.sfx.unlock(); this.sfx.enabled = true; this.sfx.setVolume(this.settings.volume); this.sfx.chime(); }
+    if (k === 'volume') { this.sfx.setVolume(this.settings.volume); this.sfx.ding(); }
     if (k === 'lang') { setLang(this.settings.lang); this.ui.refresh(); }
     if (k === 'worldSize') this.resize(true);
     if (k === 'palette') { setMode(this.settings.palette); clearSprites(); this.rebuild(); this.thumbs.clear(); }
@@ -240,7 +250,7 @@ export class App {
     this.stage.opts.intensity = s.intensity;
     this.stage.opts.reach = s.reach;
     this.sfx.enabled = s.sound;
-    this.sfx.setVolume(s.volume * 0.8);
+    this.sfx.setVolume(s.volume);
     this.sfx.allow = { critters: s.soundCritters, water: s.soundWater, toys: s.soundToys, ambient: s.soundAmbient };
     if (s.sound) this.sfx.unlock();
     this.canvas.style.filter = s.brightness === 1 ? '' : `brightness(${s.brightness})`;
@@ -269,6 +279,9 @@ export class App {
 
   private bindInput() {
     const c = this.canvas;
+    // Every tap and key press is a chance to wake the audio (browsers only allow it then).
+    addEventListener('pointerdown', () => { if (this.settings.sound) this.sfx.unlock(); }, { capture: true });
+    addEventListener('keydown', () => { if (this.settings.sound) this.sfx.unlock(); }, { capture: true });
     c.addEventListener('pointerdown', (e) => {
       if (this.mode === 'play' && !this.menuOpen) {
         const [x, y] = this.screen.toWorld(e.clientX, e.clientY);

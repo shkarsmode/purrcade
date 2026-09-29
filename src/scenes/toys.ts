@@ -124,7 +124,7 @@ function create(ctx: SceneCtx): SceneInstance {
       t.vz -= 420 * dt; t.z += t.vz * dt;
       if (t.z <= 0) {
         t.z = 0;
-        if (t.vz < -40) { t.vz = -t.vz * t.bounce; if (t.kind === 'jingle') { sfx.bounce(); fx.burst(t.x, t.y - 2, 2, ['#fff4b0'], { speed: 20, g: 40, max: 0.35 }); } }
+        if (t.vz < -40) { t.vz = -t.vz * t.bounce; if (t.kind === 'jingle') { sfx.ting(); fx.burst(t.x, t.y - 2, 2, ['#fff4b0'], { speed: 20, g: 40, max: 0.35 }); } }
         else t.vz = 0;
       }
     }

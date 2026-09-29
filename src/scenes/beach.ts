@@ -42,7 +42,7 @@ function create(ctx: SceneCtx): SceneInstance {
     g.st = 'fly'; g.fx = g.x; g.fy = g.y; g.tx = x; g.ty = y; g.fp = 0; g.post = post;
     g.fd = Math.max(1.5, dist(g.x, g.y, x, y) / 70);
     g.face = x > g.x ? 1 : -1;
-    if (rng.chance(0.5)) sfx.chirp(1);
+    if (rng.chance(0.6)) sfx.gull();
   }
 
   function update(dt: number) {
@@ -111,7 +111,7 @@ function create(ctx: SceneCtx): SceneInstance {
           if (rng.chance(0.4) && posts.length) { const pi = rng.int(0, posts.length - 1); if (!gulls.some((o) => o !== g && o.post === pi && o.st === 'post')) { fly(g, (posts[pi].x0 + posts[pi].x1) / 2, posts[pi].y, pi); continue; } }
           fly(g, rng.range(W * 0.1, W * 0.9), rng.range(band[0] + 30, band[1] - 4));
         } else if (r < 0.55) { g.st = 'walk'; g.face = rng.chance(0.5) ? 1 : -1; }
-        else { g.st = 'stand'; if (rng.chance(0.4)) g.face = (-g.face) as 1 | -1; }
+        else { g.st = 'stand'; if (rng.chance(0.4)) g.face = (-g.face) as 1 | -1; if (rng.chance(0.3)) sfx.gull(); }
       }
     }
   }

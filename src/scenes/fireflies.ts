@@ -66,7 +66,7 @@ function create(ctx: SceneCtx): SceneInstance {
         if (owl.f === 3) owl.t = 0.2;
       }
       owl.hoot -= dt;
-      if (owl.hoot <= 0) { owl.hoot = rng.range(15, 30); ctx.fx.text(owl.x + 10, owl.p.y - 26, '♪ ♪', '#dfe6ff'); }
+      if (owl.hoot <= 0) { owl.hoot = rng.range(15, 30); ctx.fx.text(owl.x + 10, owl.p.y - 26, '♪ ♪', '#dfe6ff'); ctx.sfx.owl(); }
     }
     nextHog -= dt;
     if (!hog && nextHog <= 0) { const d = rng.sign(); hog = { x: d > 0 ? -20 : W + 20, y: rng.range(band[0] + 10, band[1] - 4), dir: d, t: 0, walk: 0, stop: rng.range(2, 5) }; }

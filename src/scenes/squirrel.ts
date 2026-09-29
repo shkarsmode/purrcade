@@ -113,6 +113,7 @@ function create(ctx: SceneCtx): SceneInstance {
 
   function scare(s: Sq, x: number, y: number) {
     s.scared = 3;
+    ctx.sfx.chatter();
     s.resume = null;
     fx.text(s.x, s.y - 26, '!', '#ffe066');
     if (s.mode === 'ground') toTrunk(s);

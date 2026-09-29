@@ -68,9 +68,9 @@ function create(ctx: SceneCtx): SceneInstance {
         let best: Fly | null = null, bd = Infinity;
         for (const f of flies) { if (!f.alive) continue; const d = dist(f.x, f.y, frog.x + frog.face * 10, frog.y - 8); if (d < bd) { bd = d; best = f; } }
         if (best) frog.face = best.x > frog.x ? 1 : -1;
-        if (best && bd < 42 && frog.t <= 0) { frog.st = 'tongue'; frog.target = best; frog.tl = 0; frog.t = 0.3; break; }
+        if (best && bd < 42 && frog.t <= 0) { frog.st = 'tongue'; frog.target = best; frog.tl = 0; frog.t = 0.3; sfx.snap(); break; }
         frog.next -= dt; frog.croak -= dt;
-        if (frog.croak <= 0) { frog.croak = rng.range(6, 14); frog.st = 'croak'; frog.t = 1.2; fx.text(frog.x + frog.face * 8, frog.y - 22, '♪', '#ffffff'); sfx.chirp(3); break; }
+        if (frog.croak <= 0) { frog.croak = rng.range(6, 14); frog.st = 'croak'; frog.t = 1.2; fx.text(frog.x + frog.face * 8, frog.y - 22, '♪', '#ffffff'); sfx.croak(); break; }
         if (frog.next <= 0 && pads.length > 1) { frog.next = rng.range(7, 16); leap(rng.pick(pads.filter((p) => p !== frog.pad))); }
         break;
       }

@@ -46,6 +46,18 @@ await send('Page.navigate', { url: `http://127.0.0.1:${PORT}/` }, s); await slee
 await send('Page.navigate', { url: `http://127.0.0.1:${PORT}/` }, s); await sleep(2000);
 await js('__app.settings.fullscreen = false; __app.stats.reset(); 1');
 check('title screen shows', await js(`__app.ui.view === 'home'`));
+check('sound is on by default', await js('__app.settings.sound === true'));
+// The sound button on the title screen: off, then on again with a chime.
+const sb = await centerOf('.sound-switch');
+await click(sb[0], sb[1]);
+await sleep(200);
+check('the title-screen sound button mutes', await js(`__app.settings.sound === false && document.querySelector('.sound-switch').classList.contains('muted')`));
+const sb2 = await centerOf('.sound-switch');
+const before0 = await js('__app.sfx.played');
+await click(sb2[0], sb2[1]);
+await sleep(400);
+check('and turns it back on with a chime', await js(`__app.settings.sound === true && __app.sfx.played > ${before0}`));
+check('the audio is actually running', await js('__app.sfx.running'));
 const play = await centerOf('.btn.primary.big');
 await click(play[0], play[1]);
 await sleep(1500);
@@ -111,6 +123,14 @@ await click(playThis[0], playThis[1]);
 await sleep(1600);
 const picked = await js('__app.single');
 check('Play this plays that scene (' + picked + ')', !!picked && (await js('__app.seg.scene')) === picked);
+
+// A scene full of birds makes sound by itself, without any paws.
+await js(`__app.ui.hide(); __app.play('birds'); 1`);
+await sleep(1500);
+const p0 = await js('__app.sfx.played');
+await sleep(8000);
+const p1 = await js('__app.sfx.played');
+check('the bird scene is heard (' + (p1 - p0) + ' sounds in 8 s)', p1 - p0 >= 3);
 
 await js('__app.restNow(); 1');
 await sleep(1200);

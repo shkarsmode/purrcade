@@ -137,8 +137,10 @@ function create(ctx: SceneCtx): SceneInstance {
         if (p.y > fy) { p.y = fy; p.px = p.x - (p.x - p.px) * 0.6; }
       }
     }
-    // Feathers brushing the floor kick up a little dust.
+    // Feathers brushing the floor kick up a little dust; the bell rings when the lure is whipped about.
     const e = pts[N - 1];
+    const lureSpeed = Math.hypot(e.x - e.px, e.y - e.py);
+    if (lureSpeed > 2.2 && rng.chance(Math.min(0.5, lureSpeed * 0.06))) sfx.ting();
     if (e.y >= floorY(e.x) - 0.5 && Math.abs(e.x - e.px) > 1.2 && rng.chance(0.3)) fx.add({ x: e.x, y: e.y, vx: -(e.x - e.px) * 10, vy: -6, max: 0.35, c: '#e8dcc8', g: 20 });
   }
 

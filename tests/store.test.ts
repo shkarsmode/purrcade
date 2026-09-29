@@ -12,8 +12,20 @@ describe('settings', () => {
     const s = loadSettings(memory());
     expect(s.lang).toBe('uk');
     expect(s.catName).toBe('Джені');
-    expect(s.sound).toBe(false);
+    expect(s.sound).toBe(true);
     expect(s.segment).toBe(DEFAULTS.segment);
+  });
+
+  it('turns the sound on for settings saved when it was off by default, but keeps a later choice', () => {
+    const old = memory();
+    old.set('purrcade:settings', JSON.stringify({ v: 1, sound: false, volume: 0.5, segment: 5 }));
+    const a = loadSettings(old);
+    expect(a.sound).toBe(true);
+    expect(a.volume).toBe(0.7);
+    expect(a.segment).toBe(5);
+    const now = memory();
+    now.set('purrcade:settings', JSON.stringify({ v: 2, sound: false }));
+    expect(loadSettings(now).sound).toBe(false);
   });
 
   it('keeps what was saved and fills in what is new', () => {

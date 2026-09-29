@@ -176,7 +176,7 @@ function createMaze(ctx: SceneCtx): SceneInstance {
       if (m.p >= 1) {
         const i = m.ny * cols + m.nx;
         if (dots[i]) {
-          if (dots[i] === 2) { for (const c of cats) c.scared = 7; sfx.pop(); }
+          if (dots[i] === 2) { for (const c of cats) c.scared = 7; sfx.ding(); } else sfx.blip();
           dots[i] = 0; score += 10;
         }
         const danger = fromCats[i] >= 0 && fromCats[i] < 5;

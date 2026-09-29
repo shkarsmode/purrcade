@@ -45,6 +45,7 @@ function create(ctx: SceneCtx): SceneInstance {
     h.st = rng.chance(0.18) ? 'tease' : 'rise';
     h.t = 0; h.look = rng.range(0.3, 0.8);
     fx.burst(h.x, h.y - 2, 4, ['#8a6a4a', '#6a4a2a'], { speed: 26, g: 90, max: 0.45 });
+    sfx.boing();
   }
 
   function update(dt: number) {

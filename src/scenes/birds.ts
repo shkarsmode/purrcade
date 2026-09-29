@@ -144,6 +144,7 @@ function create(ctx: SceneCtx): SceneInstance {
       if (b.st === 'daze' || b.leaving) continue;
       if (dist(b.x, b.y - 6, x, y) < r) { fled.add(b.flock); flee(b); }
     }
+    if (fled.size) sfx.whoosh();
     // The rest of a startled flock follows a moment later.
     for (const b of birds) if (fled.has(b.flock) && !b.leaving && b.st !== 'flee' && rng.chance(0.8)) { b.st = 'perch'; b.t = rng.range(0.1, 0.5); b.pecks = -1; }
   }
@@ -159,7 +160,19 @@ function create(ctx: SceneCtx): SceneInstance {
     b.st = 'flee';
   }
 
+  let songT = rng.range(1, 3);
   function update(dt: number) {
+    // Someone on a perch is always saying something.
+    songT -= dt;
+    if (songT <= 0) {
+      songT = rng.range(1.2, 3.4);
+      const sitting = birds.filter((b) => b.st === 'perch' || b.st === 'peck' || b.st === 'hop');
+      if (sitting.length) {
+        const b = rng.pick(sitting);
+        if (b.sp === 'pigeon') sfx.coo(); else sfx.chirp(kinds.indexOf(b.sp));
+        if (rng.chance(0.5)) fx.text(b.x + b.face * 4, b.y - 18, '♪', '#ffffff');
+      }
+    }
     nextFlock -= dt;
     if (nextFlock <= 0) {
       nextFlock = opening-- > 0 ? rng.range(0.8, 1.6) : rng.range(2.5, 8) / Math.max(0.5, opts.density);
@@ -172,6 +185,7 @@ function create(ctx: SceneCtx): SceneInstance {
     }
     if (hawk) {
       hawk.x += hawk.v * dt;
+      if (hawk.x > 20 && hawk.x < 20 + hawk.v / 60 + 0.1 && birds.length) sfx.whoosh();
       if (hawk.x > 20 && hawk.x < 40) for (const b of birds) if (!b.leaving && b.st !== 'daze') { flee(b); if (b.st !== 'flee') b.st = 'flee'; }
       if (hawk.x > W + 100) hawk = null;
     }

@@ -46,7 +46,7 @@ export interface Settings {
 }
 
 export const DEFAULTS: Settings = {
-  v: 1,
+  v: 2,
   lang: 'uk',
   catName: 'Джені',
   offScenes: [],
@@ -63,8 +63,8 @@ export const DEFAULTS: Settings = {
   brightness: 1,
   tod: 'real',
   weather: 'auto',
-  sound: false,
-  volume: 0.5,
+  sound: true,
+  volume: 0.7,
   soundCritters: true,
   soundWater: true,
   soundToys: true,
@@ -103,6 +103,9 @@ export function loadSettings(store: Store = browserStore, lang?: string): Settin
       (s as unknown as Record<string, unknown>)[k] = v;
     }
   }
+  // Version 1 had the sound off by default; nobody chose that, so it comes on.
+  if (typeof raw.v !== 'number' || raw.v < 2) { s.sound = true; s.soundAmbient = true; if (s.volume < 0.5) s.volume = 0.7; }
+  s.v = DEFAULTS.v;
   s.segment = clampNum(s.segment, 1, 15);
   s.intensity = clampNum(s.intensity, 0, 1);
   s.density = clampNum(s.density, 0.5, 1.8);

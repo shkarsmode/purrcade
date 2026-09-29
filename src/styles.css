@@ -201,3 +201,8 @@ input.text { --line: #0e0a16; font: 400 18px 'Pixelify Sans', sans-serif; color:
 }
 
 .lang-switch { position: absolute; top: 12px; right: 12px; font-size: 16px; }
+
+.sound-switch { position: absolute; top: 12px; left: 12px; font-size: 16px; }
+.sound-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.sound-btn.muted { color: var(--muted); }
+.px-icon { width: 26px; height: 22px; image-rendering: pixelated; }
