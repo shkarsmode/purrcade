@@ -350,7 +350,7 @@ export class UI {
       for (const k of kinds) {
         const it = h('div', 'kind');
         const ic = kindIcon(k);
-        const img = new Image(); img.src = ic.toDataURL(); img.style.width = ic.width * 3 + 'px';
+        const img = new Image(); img.src = ic.toDataURL(); img.style.width = ic.width * Math.max(2, Math.round(40 / ic.height)) + 'px';
         it.appendChild(img);
         it.appendChild(h('b', '', String(c[k])));
         it.appendChild(h('span', '', t('k_' + k)));

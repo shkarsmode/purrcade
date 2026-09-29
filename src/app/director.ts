@@ -74,7 +74,11 @@ export class Director {
     const scene = this.rng.weighted(pool, (p) => {
       let w = 1;
       if (s.favorites.includes(p.id)) w *= 3;
-      if (!only && recent.includes(p.id) && pool.length > 1) w *= recent[recent.length - 1] === p.id ? 0 : 0.15;
+      // Just played: not again; played two or three back: less likely.
+      if (!only && pool.length > 1) {
+        const back = recent.length - 1 - recent.lastIndexOf(p.id);
+        if (recent.includes(p.id)) w *= back === 0 ? 0 : back === 1 ? 0.2 : 0.5;
+      }
       if (wantCalm) w *= p.energy < CALM ? 4 : 0.05;
       else if (!only && s.calm && p.energy < CALM && this.busyRun < 2) w *= 0.3;
       // Intensity leans the pick toward busy scenes or calm ones.
