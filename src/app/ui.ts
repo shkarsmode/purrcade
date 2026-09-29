@@ -9,6 +9,7 @@ import { t, tx } from './i18n';
 import { logoCanvas } from './logo';
 import { kindIcon } from './icons';
 import { Stats, sum } from './stats';
+import { Pix } from '../core/pix';
 
 export type View = 'home' | 'menu' | 'gallery' | 'settings' | 'stats' | 'rest' | 'none';
 
@@ -393,22 +394,38 @@ export class UI {
   }
 }
 
-/** A curled-up sleeping cat for the rest screen, in the game's pixels. */
+/**
+ * Jenny asleep, the way she sleeps: on her back, paws in the air — a grey-brown mackerel tabby
+ * with a warm belly, a white chin and her eyes shut. Drawn in the game's pixels.
+ */
 function sleepyCat(): HTMLCanvasElement {
-  const c = document.createElement('canvas');
-  c.width = 40; c.height = 24;
+  const p = new Pix(52, 30);
+  const B = 5, L = 6, D = 7, ST = 8, BE = 9, CH = 10, PK = 11;
+  // Tail curling round the front.
+  for (let i = 0; i < 14; i++) { const a = Math.PI * 0.2 + i * 0.16; p.disc(30 + Math.cos(a) * 15, 17 + Math.sin(a) * 9, 2.3, i % 3 === 0 ? ST : B); }
+  // Legs up, bent at the wrist.
+  for (const [x0, x1, y1] of [[18, 16, 7], [23, 25, 6], [34, 33, 7], [39, 42, 9]] as [number, number, number][]) {
+    p.capsule([x0, 14], [x1, y1], 1.8, B);
+    p.disc(x1 + (x1 > x0 ? 1 : -1), y1 - 1, 2, CH);
+  }
+  // The body on its back, belly up and warm.
+  p.ellipse(29, 17, 15, 7, (_x, _y, u, v) => (v < -0.25 ? BE : ((u * 7 + 20) % 2.2 < 0.7 && v > 0.1 ? ST : B)));
+  // The head, turned to the side, chin up.
+  p.disc(10, 18, 7.4, B);
+  p.tri([4, 12.5], [7.5, 11.5], [3, 7.6], B); p.tri([12.5, 11.5], [16, 12.5], [15.4, 7.6], B);
+  p.set(4.6, 10.4, PK); p.set(14.6, 10.4, PK);
+  p.ellipse(10, 22.5, 3.4, 2.2, CH);
+  p.rim([[B, L, D]]);
+  p.outline(1, 2);
+  // Stripes up the crown, closed eyes, a pink nose.
+  p.set(10, 12, ST); p.set(9, 13, ST); p.set(11, 13, ST);
+  for (const x of [6, 7, 8]) p.set(x, 17 + (x === 7 ? 1 : 0), 3);
+  for (const x of [12, 13, 14]) p.set(x, 17 + (x === 13 ? 1 : 0), 3);
+  p.set(10, 20, PK); p.set(10, 21, 3);
+  const c = p.canvas(['', '#211810', '#15100a', '#15110d', '#ffffff', '#8b7862', '#b3a086', '#66553f', '#30271f', '#a9774c', '#f5f1ea', '#d4917f']);
+  // Zs drifting up.
   const g = c.getContext('2d')!;
-  const px = (x: number, y: number, w: number, hh: number, col: string) => { g.fillStyle = col; g.fillRect(x, y, w, hh); };
-  // Body: a loaf curled round; tail over the nose.
-  const body = '#f08a3c', light = '#ffb070', dark = '#b85a1e', ink = '#2a1f2b';
-  for (let y = 0; y < 14; y++) { const hw = Math.round(Math.sqrt(Math.max(0, 1 - ((y - 7) / 7.5) ** 2)) * 16); px(20 - hw, 8 + y, hw * 2, 1, y < 3 ? light : y > 11 ? dark : body); }
-  for (let y = 0; y < 9; y++) { const hw = Math.round(Math.sqrt(Math.max(0, 1 - ((y - 4) / 4.5) ** 2)) * 7); px(9 - hw, 10 + y, hw * 2, 1, y < 2 ? light : body); }
-  px(3, 8, 3, 3, body); px(11, 8, 3, 3, body); px(4, 9, 1, 1, '#ff9ab8'); px(12, 9, 1, 1, '#ff9ab8');
-  px(5, 14, 2, 1, ink); px(11, 14, 2, 1, ink);
-  for (let x = 0; x < 20; x++) px(4 + x, 19 + Math.round(Math.sin(x * 0.3) * 1.5), 1, 2, dark);
-  for (const [x, y] of [[26, 11], [30, 12], [22, 13]]) px(x, y, 3, 1, dark);
-  g.fillStyle = '#ffffff'; g.font = '8px monospace';
-  px(30, 2, 3, 1, '#c9d6ff'); px(32, 3, 1, 1, '#c9d6ff'); px(31, 4, 1, 1, '#c9d6ff'); px(30, 5, 3, 1, '#c9d6ff');
-  px(35, 0, 2, 1, '#8fa0d8'); px(36, 1, 1, 1, '#8fa0d8'); px(35, 2, 2, 1, '#8fa0d8');
+  g.fillStyle = '#c9d6ff';
+  for (const [x, y, k] of [[44, 8, 3], [48, 2, 2]] as [number, number, number][]) { g.fillRect(x, y, k, 1); g.fillRect(x + k - 1, y + 1, 1, 1); g.fillRect(x, y + (k > 2 ? 2 : 1), k, 1); if (k > 2) g.fillRect(x + 1, y + 1, 1, 1); }
   return c;
 }
