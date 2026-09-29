@@ -4,3 +4,4 @@ shots
 .chrome-*
 *.log
 .vercel
+.env*
