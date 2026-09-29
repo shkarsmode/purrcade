@@ -103,6 +103,7 @@ export class Stage {
     }
     const lights: Light[] = [...(loc.lights || []), ...(this.scene && this.scene.lights ? this.scene.lights() : [])];
     lightsPass(g, tod, loc.indoor, lights, t);
+    if (loc.drawGlow && tod !== 'day') loc.drawGlow(g, t);
     if (this.scene && this.scene.drawGlow) this.scene.drawGlow(g, t);
     this.fx.draw(g, (gg, s, x, y, cc) => pixelText(gg, s, x, y, cc));
   }

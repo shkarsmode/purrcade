@@ -129,7 +129,7 @@ export const fireflies: SceneDef = {
     en: 'A night field of fireflies blinking to their own rhythm, until a wave of light runs across them all. An owl on a branch, a hedgehog in the grass.',
   },
   energy: 0.2,
-  locations: ['forest', 'meadow', 'garden', 'park'],
+  locations: ['forest', 'meadow', 'garden', 'park', 'pond'],
   tods: ['night', 'dusk'],
   kind: 'firefly',
   icon: 'firefly',

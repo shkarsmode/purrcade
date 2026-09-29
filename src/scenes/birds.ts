@@ -350,7 +350,7 @@ export const birds: SceneDef = {
     en: 'Sparrows, tits and bullfinches land on the fence, peck seed and splash in the bath. A hawk’s shadow and they are gone.',
   },
   energy: 0.6,
-  locations: ['garden', 'park', 'winter', 'forest', 'meadow'],
+  locations: ['garden', 'park', 'winter', 'rooftop', 'forest', 'meadow'],
   tods: ['dawn', 'day', 'dusk'],
   kind: 'bird',
   icon: 'bird',

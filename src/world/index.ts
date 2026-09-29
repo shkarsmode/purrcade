@@ -4,8 +4,9 @@ import { garden, park, meadow, forest, winter } from './outdoor';
 import { koiPond, aquarium } from './water';
 import { beach } from './coast';
 import { arcade } from './arcade';
+import { rooftop, pond } from './more';
 
-export const LOCATIONS: LocationDef[] = [kitchen, livingroom, attic, garden, park, meadow, forest, winter, koiPond, aquarium, beach, arcade];
+export const LOCATIONS: LocationDef[] = [kitchen, livingroom, attic, garden, park, meadow, forest, winter, koiPond, pond, aquarium, beach, rooftop, arcade];
 
 export function locationById(id: string): LocationDef | undefined {
   return LOCATIONS.find((l) => l.id === id);

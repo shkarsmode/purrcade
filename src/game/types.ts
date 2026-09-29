@@ -47,6 +47,8 @@ export interface LocationInstance {
   drawSky?(g: CanvasRenderingContext2D, t: number): void;
   drawBack(g: CanvasRenderingContext2D, t: number): void;
   drawFront?(g: CanvasRenderingContext2D, t: number): void;
+  /** Things in the place that shine by themselves (lit windows), drawn after the hour's tint. */
+  drawGlow?(g: CanvasRenderingContext2D, t: number): void;
 }
 
 export interface LocationDef {
