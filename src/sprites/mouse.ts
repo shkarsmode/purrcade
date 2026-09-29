@@ -7,7 +7,7 @@
 import { Pix, sprite, solidPal } from '../core/pix';
 import { BASE, O, U, E, G } from './common';
 
-export type MouseCoat = 'brown' | 'grey' | 'white' | 'gold';
+export type MouseCoat = 'brown' | 'grey' | 'white' | 'gold' | 'tin';
 export type MousePose = 'run' | 'sit' | 'rear' | 'eat' | 'daze';
 
 //                       body       light      dark       belly      pink       tail
@@ -16,6 +16,7 @@ const COATS: Record<MouseCoat, string[]> = {
   grey: ['#9e9dab', '#c0bfcb', '#6f6e7e', '#e8e7f0', '#ef98a4', '#c98f98'],
   white: ['#ece6dc', '#ffffff', '#b9afa2', '#ffffff', '#f5a3ae', '#e7aab3'],
   gold: ['#f2bd45', '#ffe08a', '#b98424', '#fff2bd', '#ff9aa6', '#e2a15e'],
+  tin: ['#aab4c2', '#e4ecf4', '#6e7888', '#cfd8e2', '#e89aa4', '#8a94a4'],
 };
 const B = 5, L = 6, D = 7, BE = 8, PK = 9, TL = 10, WH = 11, CR = 12;
 
