@@ -3,8 +3,12 @@ import { mice } from './mice';
 import { birds } from './birds';
 import { laser } from './laser';
 import { toys } from './toys';
+import { koi } from './koi';
+import { butterflies } from './butterflies';
+import { fireflies } from './fireflies';
+import { bugs } from './bugs';
 
-export const SCENES: SceneDef[] = [mice, birds, laser, toys];
+export const SCENES: SceneDef[] = [mice, birds, laser, toys, koi, butterflies, fireflies, bugs];
 
 export function sceneById(id: string): SceneDef | undefined {
   return SCENES.find((s) => s.id === id);

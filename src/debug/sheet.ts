@@ -5,6 +5,7 @@
 import { col } from '../core/color';
 import { mouseSprite, cheeseSprite, type MouseCoat, type MousePose } from '../sprites/mouse';
 import { birdSprite, type Species, type BirdPose } from '../sprites/bird';
+import { butterflySprite, beeSprite, ladybugSprite, beetleSprite, antSprite, spiderSprite, caterpillarSprite, grasshopperSprite, fireflySprite, owlSprite, hedgehogSprite, type Wing } from '../sprites/insects';
 
 type Cell = { img: HTMLCanvasElement; label?: string };
 const SHEETS: Record<string, () => Cell[][]> = {
@@ -19,6 +20,14 @@ const SHEETS: Record<string, () => Cell[][]> = {
       rows.push(row);
     }
     rows.push([1, 0.75, 0.5, 0.25].map((k) => ({ img: cheeseSprite(k) })));
+    return rows;
+  },
+  bugs: () => {
+    const rows: Cell[][] = [];
+    for (const w of ['monarch', 'morpho', 'white', 'swallowtail', 'admiral', 'pink'] as Wing[]) rows.push([0, 1, 2, 3].map((f) => ({ img: butterflySprite(w, f) })));
+    rows.push([beeSprite(0), beeSprite(1), ladybugSprite(0), ladybugSprite(1), ladybugSprite(0, true), beetleSprite(0), beetleSprite(1), antSprite(0, null), antSprite(1, '#7ad05a'), spiderSprite(0), spiderSprite(1)].map((img) => ({ img })));
+    rows.push([caterpillarSprite(0), caterpillarSprite(1), caterpillarSprite(2), caterpillarSprite(3), grasshopperSprite(false), grasshopperSprite(true), fireflySprite(false), fireflySprite(true)].map((img) => ({ img })));
+    rows.push([owlSprite(0), owlSprite(1), owlSprite(2), owlSprite(3), hedgehogSprite(0), hedgehogSprite(1), hedgehogSprite(2), hedgehogSprite(3)].map((img) => ({ img })));
     return rows;
   },
   bird: () => {
