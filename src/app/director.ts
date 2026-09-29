@@ -68,6 +68,8 @@ export class Director {
     let pool = only ? this.scenes.filter((p) => p.id === only) : this.playable(s);
     if (!pool.length) pool = this.scenes;
     if (!pool.length) throw new Error('no scenes');
+    const h = now.getHours();
+    const late = s.calm && (h >= 23 || h < 5);
     const wantCalm = !only && s.calm && this.busyRun >= (this.rng.chance(0.5) ? 2 : 3) && pool.some((p) => p.energy < CALM);
     const recent = this.history.slice(-3).map((h) => h.scene);
     const lastLoc = this.history.length ? this.history[this.history.length - 1].loc : '';
@@ -81,6 +83,8 @@ export class Director {
       }
       if (wantCalm) w *= p.energy < CALM ? 4 : 0.05;
       else if (!only && s.calm && p.energy < CALM && this.busyRun < 2) w *= 0.3;
+      // Late at night, calm scenes: a cat should be winding down, not wound up.
+      if (!only && late) w *= p.energy < CALM ? 2.5 : p.energy > 0.8 ? 0.4 : 1;
       // Intensity leans the pick toward busy scenes or calm ones.
       w *= 0.5 + (p.energy - 0.5) * (s.intensity - 0.5) * 2 + 0.5;
       return Math.max(0.0001, w);

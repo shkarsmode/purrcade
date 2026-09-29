@@ -283,7 +283,7 @@ export class UI {
 
     const pic = sec(t('sPicture'));
     row(pic, t('worldSize'), seg('worldSize', [['auto', t('sizeAuto')], ['big', t('sizeBig')], ['medium', t('sizeMedium')], ['small', t('sizeSmall')]]));
-    row(pic, t('palette'), seg('palette', [['normal', t('palNormal')], ['cat', t('palCat')], ['contrast', t('palContrast')]]));
+    row(pic, t('palette'), seg('palette', [['normal', t('palNormal')], ['cat', t('palCat')], ['contrast', t('palContrast')]]), t('palAbout'));
     row(pic, t('brightness'), slider('brightness', 0.6, 1.2, 0.05, '☾', '☀'));
     row(pic, t('tod'), seg('tod', [['real', t('todReal')], ['cycle', t('todCycle')], ['dawn', t('dawn')], ['day', t('day')], ['dusk', t('dusk')], ['night', t('night')]]));
     row(pic, t('weather'), seg('weather', [['auto', t('wAuto')], ['often', t('wOften')], ['off', t('wOff')]]));
@@ -294,6 +294,7 @@ export class UI {
     row(snd, t('sCritters'), sw('soundCritters'));
     row(snd, t('sWater'), sw('soundWater'));
     row(snd, t('sToys'), sw('soundToys'));
+    row(snd, t('sAmbient'), sw('soundAmbient'));
 
     const paws = sec(t('sPaws'));
     row(paws, t('reach'), slider('reach', 0.6, 1.8, 0.05, '−', '+'), t('reachAbout'));

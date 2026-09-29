@@ -42,6 +42,7 @@ export class App {
   segT = 0;
   session = 0;
   private watchAcc = 0;
+  private amb = 3;
   private holdT = 0;
   private holdId: number | null = null;
   private transI = 0;
@@ -98,6 +99,7 @@ export class App {
         if (this.segT >= this.seg.dur) this.advance();
       }
       if (this.settings.timer > 0 && this.session >= this.settings.timer * 60 && !this.menuOpen) this.restNow();
+      this.ambience(dt);
     }
     if (this.holdId != null) {
       this.holdT += dt;
@@ -194,6 +196,21 @@ export class App {
     else if (this.mode === 'rest') this.play();
   }
 
+  /** The sounds of the place, now and then: birds by day, crickets by night, water, waves. */
+  private ambience(dt: number) {
+    if (!this.seg || !this.settings.sound) return;
+    this.amb -= dt;
+    if (this.amb > 0) return;
+    const { loc, tod, scene } = this.seg;
+    const outdoor = !(locationById(loc)?.indoor ?? true);
+    const wet = loc === 'koi' || loc === 'pond' || loc === 'aquarium';
+    this.amb = 2 + Math.random() * 5;
+    if (loc === 'beach') { this.sfx.wave(); this.amb = 6 + Math.random() * 2; return; }
+    if (wet && Math.random() < 0.5) { this.sfx.drip(); return; }
+    if (outdoor && tod === 'night') { this.sfx.cricket(); this.amb = 0.8 + Math.random() * 2; if (loc === 'forest' && Math.random() < 0.08) this.sfx.owl(); return; }
+    if (outdoor && tod !== 'night' && loc !== 'arcade') { if (Math.random() < (scene === 'birds' ? 0.8 : 0.45)) this.sfx.song(); return; }
+  }
+
   // --- settings ----------------------------------------------------------------------------
 
   private changed(k: keyof Settings) {
@@ -224,7 +241,7 @@ export class App {
     this.stage.opts.reach = s.reach;
     this.sfx.enabled = s.sound;
     this.sfx.setVolume(s.volume * 0.8);
-    this.sfx.allow = { critters: s.soundCritters, water: s.soundWater, toys: s.soundToys };
+    this.sfx.allow = { critters: s.soundCritters, water: s.soundWater, toys: s.soundToys, ambient: s.soundAmbient };
     if (s.sound) this.sfx.unlock();
     this.canvas.style.filter = s.brightness === 1 ? '' : `brightness(${s.brightness})`;
     this.hud.config({ name: s.catName, showName: s.hudName, showTitle: s.hudTitle, showClock: s.hudClock });

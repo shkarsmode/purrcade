@@ -52,12 +52,15 @@ function transform(c: string): string {
   if (mode === 'normal') return c;
   let [r, g, b] = rgb(c);
   if (mode === 'cat') {
-    // Dichromat-ish: red and green collapse onto a yellow axis, blue stays blue.
-    const y = r * 0.62 + g * 0.38;
-    r = y * 1.02; g = y * 0.92; b = b * 1.08 + 6;
-    // A touch more contrast, since motion against contrast is what a cat picks out.
+    // A cat is a dichromat: red and green fall onto one yellow axis, blue stays blue. So red and
+    // green both become the same yellow-olive at their brightness, blues keep their blue.
+    const y = r * 0.45 + g * 0.55;
+    r = y; g = y * 0.96;
+    // A little less colour overall, a little more contrast — shape and movement matter more.
     const l = (r + g + b) / 3;
-    r = l + (r - l) * 1.25; g = l + (g - l) * 1.25; b = l + (b - l) * 1.3;
+    r = l + (r - l) * 0.9; g = l + (g - l) * 0.9; b = l + (b - l) * 0.95;
+    const c = (v: number) => (v - 128) * 1.12 + 128;
+    r = c(r); g = c(g); b = c(b);
   } else if (mode === 'contrast') {
     const f = (v: number) => (v - 128) * 1.35 + 128;
     r = f(r); g = f(g); b = f(b);

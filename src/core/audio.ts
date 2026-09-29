@@ -10,7 +10,7 @@ export class Sfx {
   enabled = false;
   volume = 0.5;
   /** Which families may make a sound at all. */
-  allow = { critters: true, water: true, toys: true };
+  allow = { critters: true, water: true, toys: true, ambient: true };
   private last = new Map<string, number>();
 
   /** Must be called from a user gesture before anything can play. */
@@ -98,6 +98,61 @@ export class Sfx {
     const ctx = this.ok('bounce', 0.08, 'toys'); if (!ctx) return;
     const t = ctx.currentTime;
     this.tone(ctx, t, 320, 160, 0.08, 'square', 0.06);
+  }
+
+  /** A songbird's phrase: a run of quick notes that rise and fall. */
+  song() {
+    const ctx = this.ok('song', 1.5, 'ambient'); if (!ctx) return;
+    const t = ctx.currentTime;
+    const base = 2400 + Math.random() * 1600;
+    const n = 4 + Math.floor(Math.random() * 5);
+    for (let i = 0; i < n; i++) {
+      const f = base * (1 + Math.sin(i * 1.7 + Math.random()) * 0.25);
+      this.tone(ctx, t + i * 0.11, f, f * (i % 2 ? 1.3 : 0.8), 0.08, 'sine', 0.05);
+    }
+  }
+
+  /** A cricket: three quick pulses, high and thin. */
+  cricket() {
+    const ctx = this.ok('cricket', 0.8, 'ambient'); if (!ctx) return;
+    const t = ctx.currentTime;
+    const f = 4300 + Math.random() * 500;
+    for (let i = 0; i < 3; i++) this.tone(ctx, t + i * 0.055, f, f, 0.035, 'sine', 0.025);
+  }
+
+  /** An owl: hoo… hoo-hoo. */
+  owl() {
+    const ctx = this.ok('owl', 6, 'ambient'); if (!ctx) return;
+    const t = ctx.currentTime;
+    this.tone(ctx, t, 440, 400, 0.35, 'sine', 0.05);
+    this.tone(ctx, t + 0.6, 450, 410, 0.18, 'sine', 0.04);
+    this.tone(ctx, t + 0.85, 440, 390, 0.4, 'sine', 0.05);
+  }
+
+  /** A wave coming up the beach: a swell of soft noise. */
+  wave() {
+    const ctx = this.ok('wave', 3, 'ambient'); if (!ctx || !this.master) return;
+    const t = ctx.currentTime;
+    const len = 2.6;
+    const buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * len), ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    const src = ctx.createBufferSource(); src.buffer = buf;
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 700;
+    const gn = ctx.createGain();
+    gn.gain.setValueAtTime(0.0001, t);
+    gn.gain.exponentialRampToValueAtTime(0.06, t + 1.1);
+    gn.gain.exponentialRampToValueAtTime(0.0001, t + len);
+    src.connect(lp).connect(gn).connect(this.master);
+    src.start(t); src.stop(t + len);
+  }
+
+  /** Water: a soft drip or plop, quieter than a splash. */
+  drip() {
+    const ctx = this.ok('drip', 0.6, 'ambient'); if (!ctx) return;
+    const t = ctx.currentTime;
+    const f = 700 + Math.random() * 600;
+    this.tone(ctx, t, f, f * 0.35, 0.09, 'sine', 0.06);
   }
 
   /** The catch: two bright notes. */

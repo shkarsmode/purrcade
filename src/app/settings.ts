@@ -35,6 +35,7 @@ export interface Settings {
   soundCritters: boolean;
   soundWater: boolean;
   soundToys: boolean;
+  soundAmbient: boolean;
   /** Minutes before the rest screen; 0 plays on and on. */
   timer: number;
   hudName: boolean;
@@ -67,6 +68,7 @@ export const DEFAULTS: Settings = {
   soundCritters: true,
   soundWater: true,
   soundToys: true,
+  soundAmbient: true,
   timer: 0,
   hudName: true,
   hudTitle: true,
