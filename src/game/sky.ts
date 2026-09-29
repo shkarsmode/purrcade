@@ -25,6 +25,8 @@ const CLOUD: Record<TimeOfDay, [string, string, string]> = {
 
 interface Drifter { img: HTMLCanvasElement; x: number; y: number; v: number }
 interface Falling { x: number; y: number; vx: number; vy: number; life: number }
+/** Now and then something goes across the sky: geese, a plane, a balloon — and, rarely, not a plane. */
+interface Passer { kind: 'geese' | 'plane' | 'balloon' | 'ufo'; x: number; y: number; v: number; t: number; n: number; c: string }
 
 export class Sky {
   private still: HTMLCanvasElement;
@@ -32,6 +34,8 @@ export class Sky {
   private stars: { x: number; y: number; p: number; b: number }[] = [];
   private falling: Falling[] = [];
   private nextFall: number;
+  private passers: Passer[] = [];
+  private nextPass: number;
 
   constructor(private W: number, private top: number, private bottom: number, private tod: TimeOfDay, private rng: Rng) {
     const h = Math.max(1, bottom - top);
@@ -73,6 +77,7 @@ export class Sky {
       this.clouds.push({ img: ci, x: rng.range(-w, W), y: rng.range(h * 0.05, h * 0.55), v: rng.range(1.5, 5) * (tod === 'night' ? 0.5 : 1) });
     }
     this.nextFall = rng.range(4, 14);
+    this.nextPass = rng.range(12, 40);
   }
 
   private disc(g: CanvasRenderingContext2D, cx: number, cy: number, r: number, c: string, rimC: string) {
@@ -84,6 +89,18 @@ export class Sky {
   }
 
   update(dt: number) {
+    this.nextPass -= dt;
+    if (this.nextPass <= 0) {
+      this.nextPass = this.rng.range(45, 110);
+      const h = this.bottom - this.top;
+      const dir = this.rng.sign();
+      const night = this.tod === 'night';
+      const kind: Passer['kind'] = night ? (this.rng.chance(0.25) ? 'ufo' : 'plane') : this.rng.weighted(['geese', 'plane', 'balloon'] as const, (k) => ({ geese: 3, plane: 2, balloon: 1 }[k]));
+      const v = { geese: 16, plane: 22, balloon: 4, ufo: 30 }[kind] * dir;
+      this.passers.push({ kind, x: dir > 0 ? -40 : this.W + 40, y: this.rng.range(h * 0.12, h * (kind === 'balloon' ? 0.45 : 0.4)), v, t: 0, n: this.rng.int(5, 9), c: this.rng.pick(['#e8544a', '#f4c430', '#5c9ed6', '#8cc084']) });
+    }
+    for (const p of this.passers) { p.t += dt; p.x += p.v * dt; if (p.kind === 'ufo') p.y += Math.sin(p.t * 1.7) * 6 * dt; }
+    this.passers = this.passers.filter((p) => p.x > -80 && p.x < this.W + 80);
     for (const c of this.clouds) {
       c.x += c.v * dt;
       if (c.x > this.W + 10) { c.x = -c.img.width - this.rng.range(0, 60); c.y = this.rng.range(0, (this.bottom - this.top) * 0.5); }
@@ -99,6 +116,48 @@ export class Sky {
     }
   }
 
+  private drawPassers(g: CanvasRenderingContext2D) {
+    for (const p of this.passers) {
+      const X = Math.round(p.x), Y = Math.round(this.top + p.y), d = Math.sign(p.v);
+      if (p.kind === 'geese') {
+        // A V: each bird a flapping tick, trailing back from the leader.
+        g.fillStyle = col('#2a2436');
+        for (let i = 0; i < p.n; i++) {
+          const k = Math.ceil(i / 2), side = i % 2 ? 1 : -1;
+          const bx = X - d * k * 6, by = Y + side * k * 3;
+          const up = Math.sin(p.t * 7 + i) > 0;
+          g.fillRect(bx - 1, by - (up ? 1 : 0), 1, 1); g.fillRect(bx, by, 1, 1); g.fillRect(bx + 1, by - (up ? 1 : 0), 1, 1);
+        }
+      } else if (p.kind === 'plane') {
+        g.fillStyle = col('#ffffff');
+        g.globalAlpha = 0.55;
+        for (let i = 4; i < 60; i++) { if (i % 9 < 7) g.fillRect(X - d * i, Y, 1, 1); }
+        g.globalAlpha = 1;
+        g.fillStyle = col(this.tod === 'night' ? '#8a90a8' : '#e8ecf4');
+        g.fillRect(X - 2, Y, 5, 1); g.fillRect(X - d, Y - 1, 1, 1); g.fillRect(X, Y + 1, 1, 1);
+        if (this.tod === 'night' && Math.floor(p.t * 2) % 2) { g.fillStyle = col('#ff4a4a'); g.fillRect(X - d * 2, Y, 1, 1); }
+      } else if (p.kind === 'balloon') {
+        for (let yy = -6; yy <= 5; yy++) {
+          const hw = Math.round(Math.sqrt(Math.max(0, 1 - ((yy + 0.5) / 6.5) ** 2)) * 5);
+          for (let xx = -hw; xx <= hw; xx++) { g.fillStyle = col((xx + 20) % 4 < 2 ? p.c : '#fbf6ee'); g.fillRect(X + xx, Y + yy, 1, 1); }
+        }
+        g.fillStyle = col('#6a4a2a'); g.fillRect(X - 1, Y + 9, 3, 2);
+        g.fillStyle = col('#3a2a20'); g.fillRect(X - 2, Y + 6, 1, 3); g.fillRect(X + 2, Y + 6, 1, 3);
+      } else {
+        // Well, it is not a plane.
+        g.fillStyle = col('#9aa4b8'); g.fillRect(X - 6, Y, 13, 2); g.fillRect(X - 4, Y - 1, 9, 1);
+        g.fillStyle = col('#bff0ff'); g.fillRect(X - 2, Y - 3, 5, 2);
+        const on = Math.floor(p.t * 6) % 3;
+        for (let i = 0; i < 3; i++) { g.fillStyle = col(i === on ? '#ffe066' : '#5a6478'); g.fillRect(X - 4 + i * 4, Y + 1, 1, 1); }
+        if (Math.floor(p.t / 3) % 2 === 1) {
+          g.globalAlpha = 0.18; g.fillStyle = col('#bff0ff');
+          for (let yy = 3; yy < 40; yy++) { const w = Math.round(2 + yy * 0.25); g.fillRect(X - w, Y + yy, w * 2 + 1, 1); }
+          g.globalAlpha = 1;
+        }
+      }
+    }
+  }
+
   draw(g: CanvasRenderingContext2D, t: number) {
     g.drawImage(this.still, 0, this.top);
     for (const s of this.stars) {
@@ -106,6 +165,7 @@ export class Sky {
       if (tw < 0.25) continue;
       px(g, s.x, this.top + s.y, tw > 0.85 && s.b > 0.7 ? '#ffffff' : s.b > 0.5 ? '#c9d6ff' : '#8c9bd0');
     }
+    this.drawPassers(g);
     for (const c of this.clouds) g.drawImage(c.img, Math.round(c.x), Math.round(this.top + c.y));
     for (const f of this.falling) {
       const k = f.life / 0.9;
