@@ -104,7 +104,7 @@ export function loadSettings(store: Store = browserStore, lang?: string): Settin
     }
   }
   // Version 1 had the sound off by default; nobody chose that, so it comes on.
-  if (typeof raw.v !== 'number' || raw.v < 2) { s.sound = true; s.soundAmbient = true; if (s.volume < 0.5) s.volume = 0.7; }
+  if (typeof raw.v !== 'number' || raw.v < 2) { s.sound = true; s.soundAmbient = true; if (s.volume <= 0.5) s.volume = 0.7; }
   s.v = DEFAULTS.v;
   s.segment = clampNum(s.segment, 1, 15);
   s.intensity = clampNum(s.intensity, 0, 1);
