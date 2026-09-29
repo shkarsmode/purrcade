@@ -5,3 +5,4 @@ shots
 *.log
 .vercel
 .env*
+.chrome-sweep

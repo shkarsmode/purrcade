@@ -12,11 +12,12 @@ import { robot } from './robot';
 import { wand } from './wand';
 import { bubbles } from './bubbles';
 import { sunspots } from './sunspots';
+import { maze, breakout, snake } from './arcade';
 import { butterflies } from './butterflies';
 import { fireflies } from './fireflies';
 import { bugs } from './bugs';
 
-export const SCENES: SceneDef[] = [mice, birds, laser, wand, toys, robot, koi, aquarium, beachScene, squirrel, moles, bubbles, sunspots, butterflies, fireflies, bugs];
+export const SCENES: SceneDef[] = [mice, birds, laser, wand, toys, robot, koi, aquarium, beachScene, squirrel, moles, bubbles, sunspots, butterflies, fireflies, bugs, maze, breakout, snake];
 
 export function sceneById(id: string): SceneDef | undefined {
   return SCENES.find((s) => s.id === id);

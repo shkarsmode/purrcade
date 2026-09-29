@@ -36,6 +36,8 @@ if (q.has('sheet')) {
   addEventListener('resize', () => { if (screen.resize()) stage.resize(screen.W, screen.H); });
   canvas.addEventListener('pointerdown', (e) => { const [x, y] = screen.toWorld(e.clientX, e.clientY); stage.paw(x, y); });
   (window as unknown as { __stage: Stage }).__stage = stage;
+  // For the sweep tool: what there is to play.
+  (window as unknown as { __catalog: unknown }).__catalog = { scenes: SCENES.map((s) => ({ id: s.id, locations: s.locations, tods: s.tods || null })), locations: LOCATIONS.map((l) => l.id) };
 } else {
   const app = new App(canvas, document.getElementById('ui')!);
   (window as unknown as { __app: App }).__app = app;
