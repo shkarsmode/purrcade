@@ -5,6 +5,8 @@
 import { col } from '../core/color';
 import { mouseSprite, cheeseSprite, type MouseCoat, type MousePose } from '../sprites/mouse';
 import { birdSprite, type Species, type BirdPose } from '../sprites/bird';
+import { squirrelSprite, acornSprite } from '../sprites/squirrel';
+import { fishSprite, crabSprite, type FishKind } from '../sprites/fish';
 import { butterflySprite, beeSprite, ladybugSprite, beetleSprite, antSprite, spiderSprite, caterpillarSprite, grasshopperSprite, fireflySprite, owlSprite, hedgehogSprite, type Wing } from '../sprites/insects';
 
 type Cell = { img: HTMLCanvasElement; label?: string };
@@ -30,6 +32,11 @@ const SHEETS: Record<string, () => Cell[][]> = {
     rows.push([owlSprite(0), owlSprite(1), owlSprite(2), owlSprite(3), hedgehogSprite(0), hedgehogSprite(1), hedgehogSprite(2), hedgehogSprite(3)].map((img) => ({ img })));
     return rows;
   },
+  squirrel: () => [
+    [0, 1, 2, 3].map((f) => ({ img: squirrelSprite('run', f) })).concat([0, 1].map((f) => ({ img: squirrelSprite('sit', f) }))),
+    [0, 1].map((f) => ({ img: squirrelSprite('climb', f) })).concat([0, 1].map((f) => ({ img: squirrelSprite('dig', f) })), [{ img: acornSprite() }]),
+    [0, 1, 2, 3].map((f) => ({ img: fishSprite(['neon', 'clown', 'angel', 'gold'][f] as FishKind, 0) })).concat(['tang', 'betta', 'puffer'].map((k) => ({ img: fishSprite(k as FishKind, 1) })), [{ img: fishSprite('puffer', 0, true) }, { img: crabSprite(0, true) }]),
+  ],
   bird: () => {
     const rows: Cell[][] = [];
     for (const s of ['sparrow', 'bluetit', 'robin', 'bullfinch', 'goldfinch', 'pigeon'] as Species[]) {
