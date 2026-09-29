@@ -122,3 +122,56 @@ export function birdSprite(s: Species, pose: BirdPose, f = 0): HTMLCanvasElement
 export function birdBox(s: Species) {
   return s === 'pigeon' ? PIGEON : BIRD;
 }
+
+/** A herring gull, side on: white, grey mantle, black wingtips, yellow bill with the red spot. */
+export function gullSprite(pose: 'stand' | 'walk' | 'fly' | 'glide', f = 0): HTMLCanvasElement {
+  const n = pose === 'walk' ? f & 1 : pose === 'fly' ? f & 3 : 0;
+  return sprite('gull:' + pose + n, 36, 24, (p) => {
+    const W = 5, WL = 6, WD = 7, GR = 8, GL = 9, K = 10, BK = 11, RD = 12, LG = 13;
+    const fly = pose === 'fly' || pose === 'glide';
+    const by = fly ? 12 : 13;
+    if (!fly) {
+      const st = pose === 'walk' ? (n ? 1.5 : -1.5) : 0;
+      p.line(15 + st, by + 4, 15 + st, 22.6, LG); p.line(18 - st, by + 4, 18 - st, 22.6, LG);
+      p.set(16 + st, 22.6, LG); p.set(19 - st, 22.6, LG);
+    }
+    p.tri([9, by - 1], [2, by - 2.5 + (fly ? 1 : 2)], [3, by + 1.5], W);
+    p.ellipse(15, by, 8, 4.4, W, fly ? 0 : -0.1);
+    p.disc(23.5, by - 4 + (fly ? 1.5 : 0), 3.6, W);
+    const hy = by - 4 + (fly ? 1.5 : 0);
+    p.tri([26.5, hy - 0.6], [26.5, hy + 1.2], [31, hy + 0.4], BK);
+    p.set(29.6, hy + 1, RD);
+    if (!fly) {
+      p.ellipse(13.5, by - 1.2, 7.6, 3, GR, -0.12);
+      p.rect(5, by - 1, 8, by + 1, K);
+    } else if (pose === 'glide') {
+      p.tri([10, by - 2], [20, by - 2], [15, by - 11], GR); p.tri([13, by - 9], [17, by - 9], [15, by - 12], K);
+    } else {
+      const k = n;
+      if (k === 0) { p.tri([10, by - 2], [20, by - 2], [12, 0], GR); p.rect(11, 0, 13, 2, K); }
+      else if (k === 2) { p.tri([10, by], [20, by], [13, 23], GR); p.rect(12, 21, 14, 23, K); }
+      else { p.ellipse(14, by - 2, 11, 2.2, GR); p.rect(2, by - 3, 5, by - 1, K); }
+    }
+    p.rim([[W, WL, WD], [GR, GL, 0]]);
+    p.outline(O, U);
+    p.set(24.5, hy - 1, E);
+  }, [...BASE, '#fbfbf8', '#ffffff', '#c9cfd8', '#9aa8b8', '#c0cad6', '#2a2430', '#f4c430', '#e8442e', '#f0b890']);
+}
+
+/** A sandpiper: a little wader on long legs that runs after the waves. */
+export function piperSprite(pose: 'stand' | 'run' | 'peck', f = 0): HTMLCanvasElement {
+  const n = pose === 'run' ? f & 1 : 0;
+  return sprite('piper:' + pose + n, 18, 15, (p) => {
+    const B = 5, L = 6, D = 7, BE = 8, BK = 9, LG = 10;
+    const peck = pose === 'peck';
+    if (pose === 'run') { p.line(8, 9, n ? 5 : 11, 14, LG); p.line(9, 9, n ? 11 : 6, 14, LG); }
+    else { p.line(8, 9, 7.6, 14, LG); p.line(9.6, 9, 10, 14, LG); }
+    p.ellipse(8.5, 7, 5, 3, (_x, _y, _u, v) => (v > 0.1 ? BE : B), peck ? 0.5 : -0.15);
+    const hx = peck ? 13 : 12.5, hy = peck ? 9 : 4;
+    p.disc(hx, hy, 2.2, B);
+    p.line(hx + 2, hy + 0.4, hx + 5, hy + (peck ? 3 : 1.2), BK);
+    p.rim([[B, L, D], [BE, 0, 0]]);
+    p.outline(O, U);
+    p.set(hx + 0.6, hy - 0.6, E);
+  }, [...BASE, '#a08a70', '#c0a888', '#6a5a48', '#fbf8f0', '#2a2430', '#3a3440']);
+}
