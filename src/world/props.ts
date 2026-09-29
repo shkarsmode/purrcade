@@ -166,6 +166,23 @@ export function logSprite(): HTMLCanvasElement {
   }, P(['#7a5236', '#9a6e48', '#523520', '#d9b07a', '#b0875a', '#5a9a3e', '#8fcf5a']));
 }
 
+/** A paper bag on its side, mouth to us — the best thing in any room, as far as Jenny is concerned. */
+export function paperBagSprite(): HTMLCanvasElement {
+  return sprite('prop:bag', 40, 26, (p) => {
+    const B = 5, L = 6, D = 7, IN = 8, F = 9;
+    p.tri([2, 24], [34, 24], [30, 4], B);
+    p.rect(2, 9, 30, 24, B);
+    p.rect(30, 4, 36, 24, B);
+    // The open end: a dark mouth with the paper's edge round it.
+    p.rect(3, 10, 15, 23, IN);
+    p.rect(3, 10, 15, 10, F); p.rect(3, 10, 3, 23, F);
+    for (let x = 18; x < 34; x += 5) p.line(x, 6, x - 1, 23, D);
+    p.line(16, 9, 30, 4, L);
+    p.rim([[B, L, D]]);
+    p.outline(O, U);
+  }, P(['#c9a06a', '#e4c08a', '#9a7648', '#2a1c14', '#f0d8a8']));
+}
+
 /** A prop standing with its middle-bottom at (x, y). */
 export function prop(img: HTMLCanvasElement, x: number, y: number, shadowW = img.width * 0.9): Prop {
   const X = Math.round(x - img.width / 2), Y = Math.round(y - img.height + 1);

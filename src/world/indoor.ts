@@ -10,7 +10,7 @@ import type { Rng } from '../core/rng';
 import type { LocationDef, LocationInstance, TimeOfDay, Hole, Light, Prop } from '../game/types';
 import { bands, boards, drawHole, oval, planks, px, rect, tiles, wallpaper, speckle } from '../game/art';
 import { SKY } from '../game/sky';
-import { sackSprite, bowlSprite, basketSprite, plantSprite, boxSprite, bootsSprite, prop } from './props';
+import { sackSprite, bowlSprite, basketSprite, plantSprite, boxSprite, bootsSprite, paperBagSprite, prop } from './props';
 
 /** A window onto the sky for the hour: panes, a far horizon, frame, sill. */
 function windowView(g: CanvasRenderingContext2D, rng: Rng, x: number, y: number, w: number, h: number, tod: TimeOfDay, frame = '#f4efe6') {
@@ -301,6 +301,7 @@ export const livingroom: LocationDef = {
     const props: Prop[] = [];
     if (W > 300) props.push(prop(plantSprite('monstera'), Math.round(W * 0.8), Math.round(floorY + (H - floorY) * 0.42), 26));
     props.push(prop(basketSprite(), Math.round(W * 0.12), H - 8, 32));
+    if (W > 360) props.push(prop(paperBagSprite(), Math.round(W * 0.62), Math.round(floorY + (H - floorY) * 0.78), 36));
     const lights: Light[] = [{ x: wx + ww / 2, y: wy + wh / 2, r: 52, c: tod === 'night' ? '#6b7fc0' : '#fff2c0', a: tod === 'night' ? 1 : 0.5 }];
     if (lampLight) lights.push(lampLight);
     if (floorLight) lights.push(floorLight);
@@ -373,6 +374,8 @@ export const attic: LocationDef = {
     for (const hx of [W * 0.2, W * 0.58, W * 0.68]) holes.push({ x: Math.round(hx), y: floorY - 1, w: 13, h: 11, kind: 'arch' });
     for (const h of holes) drawHole(g, h, '#6d4f3a');
     const props: Prop[] = [prop(boxSprite(40, 24, true), Math.round(W * 0.5), Math.round(floorY + (H - floorY) * 0.7), 40)];
+    let ghost: { x: number; y: number; t: number; dir: number } | null = null;
+    let ghostWait = rng.range(20, 60);
     if (W > 320) props.push(prop(bootsSprite(), Math.round(W * 0.86), Math.round(floorY + (H - floorY) * 0.4), 26));
     return {
       indoor: true,
@@ -382,6 +385,24 @@ export const attic: LocationDef = {
       props,
       wall: [0, floorY],
       lights: [{ x: cx, y: cy, r: 70, c: tod === 'night' ? '#7d90d0' : '#ffe9b0' }, { x: bx, y: by + 6, r: 80, c: '#ffd89a', flicker: 0.05 }],
+      update(dt) {
+        // Now and then, at night, a small ghost drifts across the attic. It means no harm.
+        if (tod !== 'night') return;
+        ghostWait -= dt;
+        if (!ghost && ghostWait <= 0) ghost = { x: -12, y: H * rng.range(0.25, 0.5), t: 0, dir: 1 };
+        if (ghost) { ghost.t += dt; ghost.x += 14 * dt; if (ghost.x > W + 14) { ghost = null; ghostWait = rng.range(70, 160); } }
+      },
+      drawGlow(gg) {
+        if (!ghost) return;
+        const X = Math.round(ghost.x), Y = Math.round(ghost.y + Math.sin(ghost.t * 2) * 4);
+        gg.globalAlpha = 0.75;
+        gg.fillStyle = '#eef4ff';
+        for (let yy = 0; yy < 12; yy++) { const hw = yy < 5 ? Math.round(Math.sqrt(25 - (5 - yy) ** 2)) : 5; gg.fillRect(X - hw, Y + yy, hw * 2, 1); }
+        for (let i = 0; i < 4; i++) if ((i + Math.floor(ghost.t * 4)) % 2) gg.fillRect(X - 5 + i * 3, Y + 12, 2, 1);
+        gg.fillStyle = '#2a2436';
+        gg.fillRect(X - 2, Y + 4, 1, 2); gg.fillRect(X + 1, Y + 4, 1, 2); gg.fillRect(X - 1, Y + 7, 2, 1);
+        gg.globalAlpha = 1;
+      },
       drawBack(gg) {
         gg.drawImage(cv, 0, 0);
         // A beam of light from the round window, with dust hanging in it.
